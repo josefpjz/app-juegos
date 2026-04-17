@@ -1,0 +1,16 @@
+{
+  "category": "Bebidas",
+  "words": [
+    "Agua", "Café", "Té", "Leche", "Jugo de naranja", "Limonada", "Refresco",
+    "Coca-Cola", "Pepsi", "Fanta", "Sprite", "Agua con gas", "Agua de coco",
+    "Smoothie", "Batido", "Horchata", "Atole", "Champurrado", "Tejuino",
+    "Cerveza", "Vino tinto", "Vino blanco", "Vino rosado", "Champán", "Sidra",
+    "Whisky", "Ron", "Vodka", "Tequila", "Mezcal", "Gin", "Brandy", "Cognac",
+    "Bourbon", "Sake", "Sangría", "Mojito", "Margarita", "Piña Colada",
+    "Daiquiri", "Cosmopolitan", "Old Fashioned", "Negroni", "Martini",
+    "Cuba Libre", "Tequila Sunrise", "Bloody Mary", "Caipirinha", "Aperol Spritz",
+    "Espresso", "Capuccino", "Latte", "Americano", "Macchiato", "Frappuccino",
+    "Chocolate caliente", "Matcha", "Kombucha", "Kéfir", "Lassi",
+    "Guaraná", "Gatorade", "Red Bull", "Monster", "Té helado", "Cóctel de frutas"
+  ]
+}
