@@ -19,6 +19,8 @@ export default function ModeSelector() {
     setGamePhase('bracket');
   };
 
+  const bracketDisabled = teams.length === 3;
+
   const LockedOverlay = ({ label }: { label: string }) => (
     <div
       className="absolute inset-0 rounded-2xl flex items-center justify-center z-10"
@@ -74,12 +76,13 @@ export default function ModeSelector() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto w-full">
         {/* Bracket Mode */}
         <div className="relative">
+          {bracketDisabled && <LockedOverlay label="No disponible para solo 3 equipos" />}
           <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={handleBracket}
+            whileHover={bracketDisabled ? {} : { scale: 1.02 }}
+            whileTap={bracketDisabled ? {} : { scale: 0.98 }}
+            onClick={bracketDisabled ? undefined : handleBracket}
             className="glass-card p-8 text-left w-full"
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: bracketDisabled ? 'default' : 'pointer', opacity: bracketDisabled ? 0.5 : 1 }}
           >
             <div className="flex items-center gap-3 mb-4">
               <div

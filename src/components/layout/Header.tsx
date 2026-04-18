@@ -1,6 +1,7 @@
 import { Sun, Moon, RotateCcw, Home } from 'lucide-react';
 import { useGameStore } from '../../store/gameStore';
 import { clearSavedState } from '../../store/persistence';
+import innsolutionsLogo from '../../assets/innsolutions-logo.png';
 
 export default function Header() {
   const theme = useGameStore((s) => s.theme);
@@ -24,11 +25,17 @@ export default function Header() {
       }}
     >
       <div className="flex items-center gap-3">
+        <img src={innsolutionsLogo} alt="Inngames" className="h-7 w-auto" />
         <h1
           className="text-xl font-bold tracking-tight m-0"
-          style={{ color: 'var(--color-accent-cyan)' }}
+          style={{
+            background: 'linear-gradient(90deg, #ff1870, #a018f0, #0090ff, #00d8ff)',
+            WebkitBackgroundClip: 'text',
+            backgroundClip: 'text',
+            color: 'transparent',
+          }}
         >
-          🎤 PASSWORD
+          Inngames
         </h1>
         {gamePhase !== 'home' && (
           <span

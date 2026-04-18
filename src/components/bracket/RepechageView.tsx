@@ -6,6 +6,7 @@ import { useDice } from '../../hooks/useDice';
 import type { DiceResult } from '../../types';
 import { calculateRepechageTeams } from '../../lib/bracketUtils';
 import { selectRepechageTeams } from '../../lib/repechageUtils';
+import DiceFace from './DiceFace';
 
 interface Props {
   onComplete: () => void;
@@ -117,12 +118,20 @@ export default function RepechageView({ onComplete }: Props) {
           </p>
 
           <motion.div
-            className={`text-7xl font-bold my-6 ${rolling ? 'dice-rolling' : ''}`}
-            style={{ color: 'var(--color-accent-gold)' }}
+            className={`flex items-center justify-center gap-4 my-6 ${rolling ? 'dice-rolling' : ''}`}
             animate={rolling ? {} : { scale: [1, 1.2, 1] }}
             transition={{ duration: 0.3 }}
           >
-            🎲 {displayValue}
+            {rolling ? (
+              <span className="text-7xl">🎲</span>
+            ) : (
+              <>
+                <DiceFace value={displayValue} size={90} />
+                <span className="text-7xl font-bold" style={{ color: 'var(--color-accent-gold)' }}>
+                  {displayValue}
+                </span>
+              </>
+            )}
           </motion.div>
 
           <button

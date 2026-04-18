@@ -3,6 +3,7 @@ import { Play, RotateCcw, Zap, Users, Trophy, Tv } from 'lucide-react';
 import { useGameStore, hydrateStore } from '../store/gameStore';
 import { hasSavedState, clearSavedState } from '../store/persistence';
 import { useState, useEffect } from 'react';
+import innsolutionsLogo from '../assets/innsolutions-logo.png';
 
 export default function HomePage() {
   const setGamePhase = useGameStore((s) => s.setGamePhase);
@@ -38,14 +39,25 @@ export default function HomePage() {
         transition={{ duration: 0.6 }}
         className="text-center"
       >
-        <div className="flex items-center justify-center gap-3 mb-4">
-          <Tv size={40} style={{ color: 'var(--color-accent-cyan)' }} />
-          <h1 className="text-6xl font-black tracking-tight neon-cyan m-0">
-            PASSWORD
-          </h1>
+        <div className="flex flex-col items-center gap-2 mb-4">
+          <img src={innsolutionsLogo} alt="Inngames" className="h-24 w-auto" />
+          <span
+            className="text-5xl font-black tracking-tight"
+            style={{
+              background: 'linear-gradient(90deg, #ff1870, #a018f0, #0090ff, #00d8ff)',
+              WebkitBackgroundClip: 'text',
+              backgroundClip: 'text',
+              color: 'transparent',
+              display: 'inline-block',
+              paddingBottom: '0.15em',
+              lineHeight: 1.2,
+            }}
+          >
+            Inngames
+          </span>
         </div>
         <p className="text-lg" style={{ color: 'var(--color-text-secondary)' }}>
-          El juego de palabras para reuniones con amigos
+          Juegos para reuniones con amigos
         </p>
       </motion.div>
 
