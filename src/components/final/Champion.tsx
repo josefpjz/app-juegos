@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { Trophy, Star } from 'lucide-react';
+import { Trophy } from 'lucide-react';
 import { useGameStore } from '../../store/gameStore';
 import { useSoundFx } from '../../hooks/useSoundFx';
 import { useEffect } from 'react';

@@ -1,10 +1,13 @@
 import { useState, useMemo, useEffect } from 'react';
+import type { RoundScore } from '../types';
 import { motion } from 'motion/react';
 import { useGameStore } from '../store/gameStore';
 import { createThirdPlaceMatch } from '../lib/bracketUtils';
 import BracketView from '../components/bracket/BracketView';
 import PreRound from '../components/gameplay/PreRound';
+import BeerPongPreRound from '../components/gameplay/BeerPongPreRound';
 import GameRound from '../components/gameplay/GameRound';
+import BeerPongGameRound from '../components/gameplay/BeerPongGameRound';
 import RoundResult from '../components/gameplay/RoundResult';
 import PlayerLoan from '../components/loan/PlayerLoan';
 import FFAScoreTable from '../components/gameplay/FFAScoreTable';
@@ -78,6 +81,7 @@ export default function BracketPage() {
   const setThirdPlaceMatch = useGameStore((s) => s.setThirdPlaceMatch);
   const teams = useGameStore((s) => s.teams);
   const gameMode = useGameStore((s) => s.gameMode);
+  const gameId = useGameStore((s) => s.gameId);
 
   const [subPhase, setSubPhase] = useState<SubPhase>('bracket-view');
   const [turnIndex, setTurnIndex] = useState(0);
@@ -233,6 +237,74 @@ export default function BracketPage() {
 
   const handleRoundFinish = () => {
     setSubPhase('result');
+  };
+
+  const handleBeerPongFinish = (winnerId: string, team1Cups: number, team2Cups: number) => {
+    if (!currentTurn) return;
+    const matchId = currentTurn.matchId;
+    const match = matches.find((m) => m.id === matchId);
+    if (!match) return;
+
+    const makeScore = (pts: number): RoundScore => ({
+      roundNumber: 1, points: pts, penalties: 0, wordsCorrect: pts, wordsSkipped: 0,
+    });
+    const result = {
+      team1Scores: [makeScore(team1Cups)],
+      team2Scores: [makeScore(team2Cups)],
+      team1Total: team1Cups,
+      team2Total: team2Cups,
+      winnerId,
+    };
+
+    useGameStore.setState((state) => ({
+      matches: state.matches.map((m) => m.id === matchId ? { ...m, result } : m),
+      bracketRounds: state.bracketRounds.map((r) => ({
+        ...r,
+        matches: r.matches.map((m) => m.id === matchId ? { ...m, result } : m),
+      })),
+      thirdPlaceMatch: state.thirdPlaceMatch?.id === matchId
+        ? { ...state.thirdPlaceMatch, result }
+        : state.thirdPlaceMatch,
+    }));
+
+    if (winnerId && !(match as any).isThirdPlace) {
+      advanceBracketWinner(matchId, winnerId);
+    }
+
+    // Skip all remaining turns for this match
+    let nextIdx = turnIndex + 1;
+    while (nextIdx < turnQueue.length && turnQueue[nextIdx].matchId === matchId) {
+      nextIdx++;
+    }
+
+    useGameStore.setState((state) => ({
+      gameplay: {
+        currentMatchId: null, currentTeamId: null, currentRound: 1,
+        currentWord: null, wordsUsed: [], roundScore: 0, roundSkips: 0,
+        isPlaying: false, timerSeconds: state.timerDuration, roundsCompleted: [],
+      },
+      currentMatchId: null,
+    }));
+
+    const updatedState = useGameStore.getState();
+    const finalRound = updatedState.bracketRounds[updatedState.bracketRounds.length - 1];
+    const finalMatch = finalRound?.matches[0];
+    if (finalMatch?.result?.winnerId) {
+      setSuspenseWinnerId(finalMatch.result.winnerId);
+      setSubPhase('suspense');
+      return;
+    }
+
+    if (nextIdx >= turnQueue.length) {
+      setTurnIndex(0);
+      setTurnQueue([]);
+      setSubPhase('bracket-view');
+    } else {
+      const nextTurn = turnQueue[nextIdx];
+      setCurrentMatch(nextTurn.matchId);
+      setTurnIndex(nextIdx);
+      setSubPhase('pre');
+    }
   };
 
   const handleResultContinue = () => {
@@ -466,7 +538,7 @@ export default function BracketPage() {
           </p>
         </div>
         <div className="glass-card p-6 max-w-md w-full flex flex-col gap-2">
-          {teams.map((t, i) => (
+          {teams.map((t) => (
             <div key={t.id} className="flex justify-between items-center py-2 px-3 rounded-lg"
               style={{ background: 'rgba(6,182,212,0.07)' }}>
               <span className="font-bold text-base" style={{ color: 'var(--color-text-primary)' }}>{t.players.map(p => p.name).join(' & ')}</span>
@@ -541,7 +613,7 @@ export default function BracketPage() {
         Turno {turnIndex + 1} de {turnQueue.length}
       </div>
 
-      {subPhase === 'pre' && (
+      {subPhase === 'pre' && gameId !== 'beerpong' && (
         <PreRound
           matchId={match.id}
           teamId={currentTurn.teamId}
@@ -551,8 +623,25 @@ export default function BracketPage() {
           isFFA={isFFA}
         />
       )}
-      {subPhase === 'playing' && (
+      {subPhase === 'pre' && gameId === 'beerpong' && (
+        <BeerPongPreRound
+          matchId={match.id}
+          teamId={currentTurn.teamId}
+          roundNumber={currentTurn.gameRound}
+          onStart={handlePreRoundDone}
+          onLoan={() => setShowLoan(true)}
+        />
+      )}
+      {subPhase === 'playing' && gameId !== 'beerpong' && (
         <GameRound onFinish={handleRoundFinish} />
+      )}
+      {subPhase === 'playing' && gameId === 'beerpong' && match && (
+        <BeerPongGameRound
+          matchId={match.id}
+          team1Id={match.team1Id}
+          team2Id={match.team2Id}
+          onFinish={handleBeerPongFinish}
+        />
       )}
       {subPhase === 'result' && (
         <RoundResult
