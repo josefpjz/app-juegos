@@ -16,7 +16,7 @@ export const createTeamSlice: StateCreator<GameStore, [], [], TeamSlice> = (set,
     const eliIdx = players.findIndex((p) => p.name.trim().toLowerCase() === 'eli');
     const ivethIdx = players.findIndex((p) => p.name.trim().toLowerCase() === 'iveth');
     let pool = shuffle(players);
-    if (eliIdx !== -1 && ivethIdx !== -1 && Math.random() < 0.85) {
+    if (eliIdx !== -1 && ivethIdx !== -1 && Math.random() < 0.45) {
       const eli = players[eliIdx];
       const iveth = players[ivethIdx];
       pool = [eli, iveth, ...shuffle(players.filter((p) => p.id !== eli.id && p.id !== iveth.id))];
