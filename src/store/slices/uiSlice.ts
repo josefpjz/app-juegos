@@ -6,6 +6,7 @@ export const createUISlice: StateCreator<GameStore, [], [], UISlice> = (set) => 
   theme: (typeof window !== 'undefined' && localStorage.getItem('password-theme') as ThemeMode) || 'dark',
   gamePhase: 'home',
   gameMode: null,
+  gameId: 'password',
   timerDuration: 60,
 
   toggleTheme: () =>
@@ -18,6 +19,8 @@ export const createUISlice: StateCreator<GameStore, [], [], UISlice> = (set) => 
   setGamePhase: (phase: GamePhase) => set({ gamePhase: phase }),
 
   setGameMode: (mode: GameMode) => set({ gameMode: mode }),
+
+  setGameId: (id) => set({ gameId: id }),
 
   resetGame: () =>
     set({

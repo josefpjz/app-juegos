@@ -76,9 +76,11 @@ export interface UISlice {
   theme: ThemeMode;
   gamePhase: GamePhase;
   gameMode: GameMode | null;
+  gameId: 'password' | 'beerpong';
   toggleTheme: () => void;
   setGamePhase: (phase: GamePhase) => void;
   setGameMode: (mode: GameMode) => void;
+  setGameId: (id: 'password' | 'beerpong') => void;
   resetGame: () => void;
   timerDuration: number;
   setTimerDuration: (seconds: number) => void;

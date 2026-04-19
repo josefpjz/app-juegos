@@ -1,6 +1,22 @@
 import type { GameStore } from './types';
 
-const STORAGE_KEY = 'password-game-state';
+export type GameId = 'password' | 'beerpong';
+
+const STORAGE_KEYS: Record<GameId, string> = {
+  password: 'inngames-password-state',
+  beerpong: 'inngames-beerpong-state',
+};
+
+// Module-level active game — set before save/load operations
+let _activeGame: GameId = 'password';
+
+export function setActiveGame(id: GameId): void {
+  _activeGame = id;
+}
+
+export function getActiveGame(): GameId {
+  return _activeGame;
+}
 
 // Keys to persist (exclude functions, only data)
 const PERSIST_KEYS: string[] = [
@@ -18,15 +34,16 @@ export function saveState(state: GameStore): void {
     for (const key of PERSIST_KEYS) {
       data[key] = (state as unknown as Record<string, unknown>)[key];
     }
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    localStorage.setItem(STORAGE_KEYS[_activeGame], JSON.stringify(data));
   } catch {
     // localStorage might be full or unavailable
   }
 }
 
-export function loadState(): Partial<GameStore> | null {
+export function loadState(gameId?: GameId): Partial<GameStore> | null {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const key = STORAGE_KEYS[gameId ?? _activeGame];
+    const raw = localStorage.getItem(key);
     if (!raw) return null;
     return JSON.parse(raw) as Partial<GameStore>;
   } catch {
@@ -34,10 +51,10 @@ export function loadState(): Partial<GameStore> | null {
   }
 }
 
-export function clearSavedState(): void {
-  localStorage.removeItem(STORAGE_KEY);
+export function clearSavedState(gameId?: GameId): void {
+  localStorage.removeItem(STORAGE_KEYS[gameId ?? _activeGame]);
 }
 
-export function hasSavedState(): boolean {
-  return localStorage.getItem(STORAGE_KEY) !== null;
+export function hasSavedState(gameId?: GameId): boolean {
+  return localStorage.getItem(STORAGE_KEYS[gameId ?? _activeGame]) !== null;
 }

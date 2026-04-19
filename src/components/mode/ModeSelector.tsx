@@ -8,10 +8,15 @@ export default function ModeSelector() {
   const teams = useGameStore((s) => s.teams);
   const timerDuration = useGameStore((s) => s.timerDuration);
   const setTimerDuration = useGameStore((s) => s.setTimerDuration);
+  const gameId = useGameStore((s) => s.gameId);
 
   const handleBracket = () => {
     setGameMode('bracket');
-    setGamePhase('bracket');
+    if (gameId === 'beerpong' && teams.length === 3) {
+      setGamePhase('repechage');
+    } else {
+      setGamePhase('bracket');
+    }
   };
 
   const handleFFA = () => {
@@ -19,7 +24,8 @@ export default function ModeSelector() {
     setGamePhase('bracket');
   };
 
-  const bracketDisabled = teams.length === 3;
+  const bracketDisabled = gameId === 'password' ? teams.length === 3 : teams.length < 2;
+  const ffaDisabled = gameId === 'beerpong';
 
   const LockedOverlay = ({ label }: { label: string }) => (
     <div
@@ -47,7 +53,7 @@ export default function ModeSelector() {
       </div>
 
       {/* Timer config */}
-      <div className="flex justify-center">
+      {gameId !== 'beerpong' && <div className="flex justify-center">
         <div className="glass-card p-4 flex items-center gap-4">
           <Timer size={20} style={{ color: 'var(--color-accent-gold)' }} />
           <label className="text-sm font-medium" style={{ color: 'var(--color-text-secondary)' }}>
@@ -71,7 +77,7 @@ export default function ModeSelector() {
             <option value={120}>120 segundos</option>
           </select>
         </div>
-      </div>
+      </div>}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto w-full">
         {/* Bracket Mode */}
@@ -117,12 +123,13 @@ export default function ModeSelector() {
 
         {/* FFA / Modo Libre */}
         <div className="relative">
+          {ffaDisabled && <LockedOverlay label="No disponible para Beer Pong" />}
           <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={handleFFA}
+            whileHover={ffaDisabled ? {} : { scale: 1.02 }}
+            whileTap={ffaDisabled ? {} : { scale: 0.98 }}
+            onClick={ffaDisabled ? undefined : handleFFA}
             className="glass-card p-8 text-left w-full"
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: ffaDisabled ? 'default' : 'pointer', opacity: ffaDisabled ? 0.5 : 1 }}
           >
             <div className="flex items-center gap-3 mb-4">
               <div

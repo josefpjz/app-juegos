@@ -7,7 +7,8 @@ import { createMatchSlice } from './slices/matchSlice';
 import { createBracketSlice } from './slices/bracketSlice';
 import { createLeagueSlice } from './slices/leagueSlice';
 import { createUISlice } from './slices/uiSlice';
-import { saveState, loadState } from './persistence';
+import { saveState, loadState, setActiveGame } from './persistence';
+import type { GameId } from './persistence';
 
 export const useGameStore = create<GameStore>()(
   subscribeWithSelector((...a) => ({
@@ -30,9 +31,10 @@ useGameStore.subscribe(
   }
 );
 
-// Hydrate from localStorage
-export function hydrateStore(): boolean {
-  const saved = loadState();
+// Hydrate from localStorage for a specific game
+export function hydrateStore(gameId?: GameId): boolean {
+  if (gameId) setActiveGame(gameId);
+  const saved = loadState(gameId);
   if (saved) {
     useGameStore.setState(saved);
     return true;

@@ -176,12 +176,15 @@ export default function BracketView({ onPlayMatch, onStartBracketRound, nextActi
   const setEnableThirdPlace = useGameStore((s) => s.setEnableThirdPlace);
   const thirdPlaceMatch = useGameStore((s) => s.thirdPlaceMatch);
 
+  const gameId = useGameStore((s) => s.gameId);
   const [showRepechage, setShowRepechage] = useState(false);
-  const needsRepechage = !isPowerOfTwo(teams.length) && teams.length > 3;
+  const needsRepechage =
+    (!isPowerOfTwo(teams.length) && teams.length > 3) ||
+    (gameId === 'beerpong' && teams.length === 3);
 
   useEffect(() => {
     if (bracketRounds.length === 0) {
-      if (teams.length === 3) return; // FFA mode — BracketPage handles it
+      if (teams.length === 3 && gameId !== 'beerpong') return; // FFA mode — BracketPage handles it
       if (needsRepechage) {
         setShowRepechage(true);
       } else {
