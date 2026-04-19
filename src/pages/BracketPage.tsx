@@ -91,6 +91,7 @@ export default function BracketPage() {
   const [ffaNextIdx, setFfaNextIdx] = useState(0);
 
   const isFFA = gameMode === 'ffa';
+  const roundsPerTeam = gameId === 'beerpong' ? 1 : ROUNDS_PER_TEAM;
   const [ffaMatchId] = useState(() => `ffa-${Date.now()}`);
 
   // FFA initialization
@@ -104,7 +105,7 @@ export default function BracketPage() {
     };
     useGameStore.getState().addMatch(ffaMatch);
     const queue: Turn[] = [];
-    for (let gr = 1; gr <= ROUNDS_PER_TEAM; gr++) {
+    for (let gr = 1; gr <= roundsPerTeam; gr++) {
       for (const team of teams) {
         queue.push({ matchId: ffaMatchId, teamId: team.id, gameRound: gr });
       }
@@ -155,7 +156,7 @@ export default function BracketPage() {
       (m) => m.team1Id && m.team2Id && !m.result && !m.isBye
     );
     const turns: Turn[] = [];
-    for (let gr = 1; gr <= ROUNDS_PER_TEAM; gr++) {
+    for (let gr = 1; gr <= roundsPerTeam; gr++) {
       for (const match of playable) {
         turns.push({ matchId: match.id, teamId: match.team1Id, gameRound: gr });
         turns.push({ matchId: match.id, teamId: match.team2Id, gameRound: gr });
@@ -178,7 +179,7 @@ export default function BracketPage() {
       }
       // Build a turn queue for just the 3rd place match
       const turns: Turn[] = [];
-      for (let gr = 1; gr <= ROUNDS_PER_TEAM; gr++) {
+      for (let gr = 1; gr <= roundsPerTeam; gr++) {
         turns.push({ matchId: tpMatch.id, teamId: tpMatch.team1Id, gameRound: gr });
         turns.push({ matchId: tpMatch.id, teamId: tpMatch.team2Id, gameRound: gr });
       }
@@ -367,8 +368,8 @@ export default function BracketPage() {
       const match = useGameStore.getState().matches.find((m) => m.id === matchId);
       if (!match) continue;
 
-      const team1Scores = rounds.filter((_, i) => i % 2 === 0).slice(0, ROUNDS_PER_TEAM);
-      const team2Scores = rounds.filter((_, i) => i % 2 === 1).slice(0, ROUNDS_PER_TEAM);
+      const team1Scores = rounds.filter((_, i) => i % 2 === 0).slice(0, roundsPerTeam);
+      const team2Scores = rounds.filter((_, i) => i % 2 === 1).slice(0, roundsPerTeam);
       const team1Total = team1Scores.reduce((sum, s) => sum + s.points, 0);
       const team2Total = team2Scores.reduce((sum, s) => sum + s.points, 0);
 
