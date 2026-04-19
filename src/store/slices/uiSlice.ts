@@ -42,6 +42,7 @@ export const createUISlice: StateCreator<GameStore, [], [], UISlice> = (set) => 
         roundsCompleted: [],
       },
       bracketRounds: [],
+      bracketAdvancingCount: 0,
       repechageMatches: [],
       diceResults: [],
       thirdPlaceMatch: null,
